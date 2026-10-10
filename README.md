@@ -39,3 +39,7 @@ Main content: src/routes/+page.svelte. Components: src/lib/components/. Styling:
 ## License and assets
 
 Adapted from the Apache-2.0 licensed althruist/Portfolio. Preserve LICENSE, NOTICE and ASSET-SOURCES.md. Personal content and added animations are customized for Shyam J. Third-party images retain their respective ownership.
+
+## Cinema source
+
+The large cinema video is stored in media-source/ as binary parts. The build reassembles the byte-identical original MP4 and verifies its SHA-256 before Vite runs. No quality is lost. Run npm run build before using the video locally.

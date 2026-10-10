@@ -1,0 +1,30 @@
+<script>
+let {status=404}=$props();
+let spell=$state(0);
+</script>
+<svelte:head><title>{status} · Bae Stop! · Shyam J</title><meta name="robots" content="noindex"/></svelte:head>
+{#key spell}
+<main class="magic-error">
+<a class="magic-logo" href="/" aria-label="Shyam J home">SJ<span>•</span></a>
+<div class="portal-art" aria-hidden="true"><img src="/media/magic-portal.png" alt="" width="752" height="1053"/><div class="portal-ring"></div><div class="portal-flash"></div></div>
+<div class="magic-sparks" aria-hidden="true">{#each Array.from({length:32},(_,i)=>i) as i}<i style={'--x:'+((i*37)%100)+'%;--y:'+((i*23)%100)+'%;--delay:'+(-i*.43)+'s;--drift:'+((i%2?-1:1)*(20+i%5*10))+'px'}></i>{/each}</div>
+<div class="magic-copy"><p class="dimension">WRONG DIMENSION / {status}</p><h1><span>Bae</span> Stop!</h1><div class="spell-line" aria-hidden="true"></div><p class="magic-message">{status===404?'This portal leads nowhere.':'This portal needs a little magic.'}<br/>Let’s get you back to my world.</p><div class="magic-actions"><a class="home-spell" href="/">Back to my world <span aria-hidden="true">↗</span></a><button onclick={()=>spell++}>Cast again ✦</button></div><p class="magic-note">Even curious explorers take a wrong turn.</p></div>
+<div class="magic-footer">SHYAM J <span>✦</span> A LITTLE CODE. A LITTLE MAGIC.</div>
+</main>
+{/key}
+<style>
+.magic-error{position:relative;isolation:isolate;min-height:100svh;background:radial-gradient(ellipse at 75% 50%,#172661 0,#071428 44%,#030811 80%);color:#fff4db;display:flex;align-items:center;padding:140px 8% 110px;overflow:hidden;font-family:Lexend,Arial,sans-serif}
+.magic-logo{position:absolute;top:32px;left:8%;z-index:4;font-size:30px;font-weight:900;letter-spacing:-3px}.magic-logo span{color:#f2ba55;padding-left:6px}
+.portal-art{position:absolute;right:1%;top:50%;width:min(56vw,650px);aspect-ratio:752/1053;transform:translateY(-50%);z-index:-1;animation:portal-arrive 1.8s cubic-bezier(.16,1,.3,1) both}
+.portal-art img{width:100%;height:100%;object-fit:contain;mask-image:radial-gradient(ellipse at center,#000 35%,transparent 73%);animation:portal-breathe 7s ease-in-out 1.8s infinite}
+.portal-ring{position:absolute;left:11.5%;top:21%;width:77%;aspect-ratio:1;border:1px solid #ffc96a99;border-radius:50%;background:repeating-conic-gradient(from 0deg,#ffc04b00 0deg 12deg,#ffc04b99 12deg 12.5deg,#ffc04b00 12.5deg 24deg);mask-image:radial-gradient(circle,transparent 64%,#000 65%,#000 69%,transparent 70%);filter:drop-shadow(0 0 10px #f5a62c);animation:portal-spin 36s linear infinite}
+.portal-flash{position:absolute;inset:21% 11.5%;height:auto;aspect-ratio:1;border-radius:50%;background:#ffdd8a;mix-blend-mode:screen;animation:portal-flash 1.6s ease-out both;pointer-events:none}
+.magic-copy{max-width:600px;position:relative;z-index:2}.dimension{font-size:11px;letter-spacing:3px;color:#f2bd64;animation:words-reveal .8s .3s both}
+h1{font-family:Althite,Lexend,sans-serif;font-size:clamp(5.5rem,9vw,9rem);line-height:1.05;font-weight:400;letter-spacing:-2px;margin:20px 0 28px;animation:title-spell 1.4s .55s cubic-bezier(.16,1,.3,1) both;text-shadow:0 0 26px #ffb64944}h1 span{color:#ffcc76}
+.spell-line{height:2px;width:150px;background:linear-gradient(90deg,#ffba48,transparent);box-shadow:0 0 14px #ffbc52;transform-origin:left;animation:line-spell 1s 1s both}
+.magic-message{font-size:16px;line-height:1.9;color:#c0c9de;margin:26px 0 32px;animation:words-reveal .9s 1.1s both}.magic-actions{display:flex;gap:24px;align-items:center;flex-wrap:wrap;animation:words-reveal .8s 1.4s both}.home-spell{padding:15px 22px;border-radius:14px;border:1px solid #ffe2a4;background:linear-gradient(135deg,#ffc961,#dfa83d);color:#322306;font-size:13px;font-weight:600;box-shadow:0 0 25px #ffbe4b33;transition:box-shadow .2s,transform .2s}.home-spell:hover{transform:translateY(-3px);box-shadow:0 0 35px #ffbe4b66}.magic-actions button{font-size:12px;color:#f5d59a;padding:12px 0}.magic-actions button:hover{color:white}.magic-note{font-size:11px;color:#8997b3;margin:28px 0 0;animation:words-reveal .8s 1.6s both}
+.magic-sparks{position:absolute;inset:0;pointer-events:none;z-index:1}.magic-sparks i{position:absolute;left:var(--x);top:var(--y);width:3px;height:3px;background:#ffd788;border-radius:50%;box-shadow:0 0 10px #ffb842;animation:spark-float 6s var(--delay) ease-in-out infinite}.magic-footer{position:absolute;bottom:30px;left:8%;font-size:9px;letter-spacing:2px;color:#7687a9}.magic-footer span{color:#d9ac62;margin:0 12px}
+@keyframes portal-arrive{from{opacity:0;filter:blur(24px);transform:translateY(-50%) scale(.5)}to{opacity:1;filter:blur(0);transform:translateY(-50%) scale(1)}}@keyframes portal-breathe{0%,100%{filter:brightness(.9)}50%{filter:brightness(1.2)}}@keyframes portal-spin{to{transform:rotate(360deg)}}@keyframes portal-flash{0%{opacity:0;transform:scale(.1)}35%{opacity:.75}100%{opacity:0;transform:scale(1.15)}}@keyframes title-spell{from{opacity:0;filter:blur(18px);transform:translateY(30px) scale(.9)}to{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}}@keyframes words-reveal{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}@keyframes line-spell{from{transform:scaleX(0)}to{transform:scaleX(1)}}@keyframes spark-float{0%,100%{opacity:0;transform:translateY(20px)}50%{opacity:.8;transform:translate(var(--drift),-35px)}}
+@media(max-width:700px){.magic-error{padding:150px 7% 120px;min-height:100svh;align-items:flex-end}.portal-art{width:min(100vw,530px);right:-18%;top:38%;opacity:.7}.magic-copy{padding:25px 0;max-width:100%}h1{font-size:clamp(4.6rem,18vw,7rem)}.magic-message{font-size:14px}.magic-copy:before{content:'';position:absolute;inset:-30px -30px;background:linear-gradient(transparent,#030811d9 25%);z-index:-1;filter:blur(15px)}.magic-footer{font-size:8px;letter-spacing:1px;left:7%;right:7%;line-height:1.8}.dimension{font-size:10px;letter-spacing:2px}}
+@media(prefers-reduced-motion:reduce){.magic-error *{animation:none!important}.portal-flash{display:none}.portal-art{opacity:1}.magic-sparks{display:none}}
+</style>
