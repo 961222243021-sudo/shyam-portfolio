@@ -139,5 +139,3 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vercel
 .svelte-kit
-# Reassembled automatically before build
-/static/media/bored-cinema-4k.mp4

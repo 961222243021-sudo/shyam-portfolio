@@ -25,12 +25,11 @@ npm run preview
 ## Pages
 
 - `/`: portfolio, projects, experience, research and contact.
-- `/bored/`: cinema video.
 - `/destroy/`: destruction and restoration sequence.
 - `/feedback/`: local sticky-note demo. Pinning triggers Thanos destruction. Notes are never transmitted or saved.
 - `/404/`: animated error page; the build also emits 404.html.
 
-Mobile and tablet visitors see the desktop welcome screen. Browsers may require a gesture before audio plays.
+Mobile and tablet visitors see the desktop welcome screen.
 
 ## Editing
 
@@ -40,6 +39,3 @@ Main content: src/routes/+page.svelte. Components: src/lib/components/. Styling:
 
 Adapted from the Apache-2.0 licensed althruist/Portfolio. Preserve LICENSE, NOTICE and ASSET-SOURCES.md. Personal content and added animations are customized for Shyam J. Third-party images retain their respective ownership.
 
-## Cinema source
-
-The large cinema video is stored in media-source/ as binary parts. The build reassembles the byte-identical original MP4 and verifies its SHA-256 before Vite runs. No quality is lost. Run npm run build before using the video locally.
