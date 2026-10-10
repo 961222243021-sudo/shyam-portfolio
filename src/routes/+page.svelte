@@ -1,4 +1,5 @@
 <script>
+import ProjectArrowTitle from '$lib/components/ProjectArrowTitle.svelte';
 import SkillTrain from '$lib/components/SkillTrain.svelte';
 import MediumGuide from '$lib/components/MediumGuide.svelte';
 import {onMount, tick} from 'svelte';
@@ -80,7 +81,7 @@ onMount(()=>{
 <div class="filters" aria-label="Project categories">{#each [['all','everything','அனைத்தும்'],['security','security','பாதுகாப்பு'],['tamil','Tamil & APIs','தமிழ் & API'],['tools','useful tools','பயனுள்ள கருவிகள்']] as f}<button class:active={filter===f[0]} onclick={()=>{filter=f[0];}} aria-pressed={filter===f[0]}>{t(f[1],f[2])}</button>{/each}</div>
 <div class="projects-grid">{#each shown as p}<article class="project glass" style={'--accent:'+p.color}>
 <div class="project-art" aria-hidden="true"><span class="project-no">{p.n} / SHYAM'S LAB</span><div class="orbit o1"></div><div class="orbit o2"></div><div class="art-block"><span>{p.glyph}</span></div><span class="art-word">{p.title}</span><div class="art-dots">• • •</div></div>
-<div class="project-copy"><p class="tag">{p.tag}</p><h3>{t(p.title,p.ta)}</h3><p>{t(p.en,p.desc)}</p><div class="project-links"><a href={p.url} target="_blank" rel="noreferrer">{t('explore source ↗','மூல நிரல் ↗')}</a>{#if p.live}<a href={p.live} target="_blank" rel="noreferrer">{t('live website ↗','இணையதளம் ↗')}</a>{/if}</div></div></article>{/each}</div>
+<div class="project-copy"><p class="tag">{p.tag}</p><ProjectArrowTitle title={t(p.title,p.ta)} index={Number(p.n)-1}/><p>{t(p.en,p.desc)}</p><div class="project-links"><a href={p.url} target="_blank" rel="noreferrer">{t('explore source ↗','மூல நிரல் ↗')}</a>{#if p.live}<a href={p.live} target="_blank" rel="noreferrer">{t('live website ↗','இணையதளம் ↗')}</a>{/if}</div></div></article>{/each}</div>
 </section>
 <section id="about" class="section"><SmokeIdentity {tamil}/>
 <div class="about-card glass reveal"><video bind:this={aboutVideo} src="/media/shyam-snow-loop.mp4" poster="/media/shyam-snow.webp" muted playsinline loop autoplay={motion} onloadeddata={playScenery} preload="metadata" aria-hidden="true"></video><div class="about-copy"><p class="intro">{t("I'm Shyam J, a cybersecurity enthusiast and aspiring Security Analyst from Tirunelveli, Tamil Nadu.",'நான் ஷ்யாம் J. தமிழ்நாட்டின் திருநெல்வேலியைச் சேர்ந்த இணையப் பாதுகாப்பு ஆர்வலர் மற்றும் பாதுகாப்பு ஆய்வாளராகப் பணியாற்ற விரும்புபவர்.')}</p><p>{t('I focus on ethical hacking, vulnerability assessment, network security and research. I enjoy working with Python, Linux and automation to understand vulnerabilities and improve the security of digital systems.','அறநெறி ஹாக்கிங், பாதிப்பு மதிப்பீடு, வலையமைப்புப் பாதுகாப்பு மற்றும் ஆராய்ச்சியில் கவனம் செலுத்துகிறேன். Python, Linux மற்றும் தானியக்கம் மூலம் பாதுகாப்புச் சிக்கல்களைப் புரிந்து தீர்வு காண விரும்புகிறேன்.')}</p><OrbEducation {tamil}/><h3 class="handwriting">{t('my toolkit','என் திறன்கள்')}</h3><SkillTrain {skills} {tamil}/></div></div>
