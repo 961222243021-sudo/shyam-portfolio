@@ -1,40 +1,66 @@
 <script>
 import {onMount} from 'svelte';
+import gsap from 'gsap';
 let {projects=[],tamil=false,onfinish=()=>{}}=$props();
-let step=$state(0),reduced=$state(false);
-const timers=[];let complete=false;
+let stage=$state(-1),landing=$state(false),overlay,face,emblem,mark,finalLogo;
 const t=(en,ta)=>tamil?ta:en;
-function finish(){if(complete)return;complete=true;timers.forEach(clearTimeout);onfinish();}
+const radial=(rx,ry,star=false)=>Array.from({length:16},(_,i)=>{const a=i*Math.PI/8-Math.PI/2,r=star&&i%2?.55:1;return (Math.cos(a)*rx*r).toFixed(2)+','+(Math.sin(a)*ry*r).toFixed(2)}).join(' ');
+const shapes=[
+ '0,-53 25,-45 45,-35 45,-12 42,12 32,30 18,44 0,54 -18,44 -32,30 -42,12 -45,-12 -45,-35 -25,-45 -12,-49 -6,-51',
+ radial(53,53,true),
+ radial(55,34),
+ '-52,-35 -30,-40 -12,-35 0,-27 12,-35 30,-40 52,-35 52,39 30,34 12,39 0,47 -12,39 -30,34 -52,39 -52,12 -52,-12',
+ '-38,-51 -12,-51 12,-51 38,-51 48,-40 48,-12 48,12 48,40 38,51 12,51 -12,51 -38,51 -48,40 -48,12 -48,-12 -48,-40',
+ '-12,-52 12,-52 12,-35 24,-35 24,-18 37,-18 37,0 50,0 50,48 20,48 20,18 -20,18 -20,48 -50,48 -50,0 -12,-35'
+];
 onMount(()=>{
- reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- if(reduced){timers.push(setTimeout(finish,700));return()=>timers.forEach(clearTimeout);}
- for(let i=1;i<=projects.length+1;i++)timers.push(setTimeout(()=>step=i,380+(i-1)*150));
- timers.push(setTimeout(finish,380+projects.length*150+380));
- return()=>timers.forEach(clearTimeout);
+ let done=false;
+ const complete=()=>{if(done)return;done=true;onfinish();};
+ if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){const id=setTimeout(complete,700);return()=>clearTimeout(id);}
+ const tl=gsap.timeline({onComplete:complete});
+ gsap.set(emblem,{opacity:0});gsap.set(finalLogo,{opacity:0});
+ tl.fromTo(face,{scale:.84,opacity:0},{scale:1,opacity:1,duration:.18})
+ .to(face,{opacity:0,scale:1.06,duration:.12},.35);
+ for(let i=0;i<projects.length;i++){
+  const at=.44+i*.19;
+  tl.call(()=>stage=i,[],at)
+   .to(emblem,{opacity:1,attr:{points:shapes[i%shapes.length]},duration:.15,ease:'power2.inOut'},at)
+   .fromTo(mark,{scale:.82,opacity:.25},{scale:1,opacity:1,duration:.14,ease:'power2.out'},at);
+ }
+ const end=.44+projects.length*.19;
+ tl.call(()=>stage=projects.length,[],end)
+ .to(emblem,{opacity:0,scale:.6,duration:.14},end)
+ .fromTo(finalLogo,{opacity:0,scale:.55},{opacity:1,scale:1,duration:.17,ease:'power2.out'},end)
+ .call(()=>{
+  landing=true;
+  const target=document.querySelector('.nav .logo')?.getBoundingClientRect();
+  const x=target?target.left+target.width/2:50,y=target?target.top+target.height/2:50;
+  gsap.to(finalLogo,{x:x-window.innerWidth/2,y:y-window.innerHeight/2,scale:.28,duration:.5,ease:'power3.inOut'});
+ },[],end+.2)
+ .to(overlay,{backgroundColor:'rgba(9,11,16,0)',duration:.48},end+.2)
+ .to(finalLogo,{opacity:0,duration:.08},end+.7);
+ return()=>{tl.kill();gsap.killTweensOf(finalLogo);};
 });
 </script>
-<div class="project-reel" class:light={step>0&&step%2===0} class:reduced role="dialog" aria-modal="true" aria-label={t('Shyam’s project introduction','ஷ்யாமின் படைப்புகள் அறிமுகம்')}>
- 
-
- {#key step}
- <div class="reel-frame">
- {#if step===0}
-  <div class="portrait-frame"><img src="/media/shyam-reel-photo.jpg" alt="Shyam J at his laptop" width="1280" height="960"/><span class="portrait-border"></span></div>
-  
- {:else if step<=projects.length}
-  {@const project=projects[step-1]}
-  <div class="project-emblem" style={'--accent:'+project.color}><span class="emblem-orbit"></span><span class="emblem-orbit second"></span><span class="project-glyph">{project.glyph}</span><i></i><i></i><i></i></div>
-  
- {:else}
-  <div class="end-monogram">SJ<span>•</span></div>
- {/if}
- </div><div class="reel-wipe" aria-hidden="true"></div>
- {/key}
-
+<div bind:this={overlay} class="refined-reel" class:landing role="status" aria-label={t('Shyam and his projects','ஷ்யாம் மற்றும் அவரது படைப்புகள்')}>
+ <div class="reel-center">
+  <div bind:this={face} class="face-logo" class:hidden={stage>=0}><img src="/media/shyam-reel-photo.jpg" alt="Shyam J" width="1280" height="960"/></div>
+  <svg class="morph-logo" viewBox="-70 -70 140 140" aria-hidden="true">
+   <polygon bind:this={emblem} points={shapes[0]} class="morph-shell"/>
+   <g bind:this={mark} class="mark-core" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    {#if stage===0}<path d="M0 -25V0M0 0L-23 22M0 0L23 22"/><circle cx="0" cy="-25" r="6"/><circle cx="-23" cy="22" r="6"/><circle cx="23" cy="22" r="6"/><circle cx="0" cy="0" r="5"/>
+    {:else if stage===1}<path d="M0 -30V30M-26 -15L26 15M-26 15L26 -15M-7 -23L0 -16L7 -23M-7 23L0 16L7 23"/>
+    {:else if stage===2}<circle cx="0" cy="0" r="18"/><circle cx="0" cy="0" r="6" fill="currentColor"/><path d="M-36 0H-28M28 0H36M0 -27V-23M0 23V27"/>
+    {:else if stage===3}<path d="M-33 -17Q-16 -23 0 -10Q16 -23 33 -17V22Q16 16 0 29Q-16 16 -33 22ZM0 -10V29M-25 -7L-9 -5M9 -5L25 -7M-25 3L-9 5M9 5L25 3"/>
+    {:else if stage===4}<path d="M-27 -29H27V-13H-27ZM-27 0H-18M-27 13H-18M-27 26H-18M17 -6L3 14H17L3 35"/>
+    {:else if stage===5}<path d="M-28 1H28M-21 -15H21M-12 -31H12M-35 38V12H35V38"/><text x="0" y="36" text-anchor="middle" fill="currentColor" stroke="none" font-family="Arial,sans-serif" font-size="24">அ</text>
+    {/if}
+   </g>
+  </svg>
+  <div bind:this={finalLogo} class="final-sj" aria-hidden="true">SJ<span>•</span></div>
+ </div>
+ <span class="accessible-project">{stage>=0&&stage<projects.length?t(projects[stage].title,projects[stage].ta):'Shyam J'}</span>
 </div>
 <style>
-.project-reel{position:fixed;inset:0;z-index:1100;isolation:isolate;overflow:hidden;background:#090c12;color:#f5f5f0;transition:background .3s,color .3s;font-family:Lexend,Arial,sans-serif}.project-reel.light{background:#f0eee8;color:#171c28}.project-reel header,.project-reel footer{position:absolute;left:5%;right:5%;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:10px;letter-spacing:1.7px;z-index:10}.project-reel header{top:30px}.project-reel header button{font:inherit;color:inherit;background:transparent;border:1px solid #9995;padding:10px 15px;border-radius:25px;cursor:pointer}.project-reel button:focus-visible{outline:2px solid #b4a1e4;outline-offset:4px}.project-reel footer{bottom:30px;font-size:9px}.reel-frame{position:absolute;inset:70px 6%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:frame-enter .22s cubic-bezier(.2,1,.3,1) both}.reel-frame h1{font-size:clamp(28px,5vw,68px);font-weight:800;letter-spacing:-2px;line-height:1.2;margin:10px 0;max-width:1000px;overflow-wrap:break-word}.reel-kicker{font-size:clamp(8px,1vw,11px);line-height:1.8;letter-spacing:2px;opacity:.6;margin:24px 0 0;max-width:750px}.portrait-frame{position:relative;width:min(390px,55vh);height:min(290px,39vh);overflow:hidden;border-radius:10px;box-shadow:0 0 70px #99c9e51b;transform:rotate(-3deg)}.portrait-frame img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 52%;animation:portrait-focus .7s ease-out both}.portrait-border{position:absolute;inset:9px;border:1px solid #ffffff42;border-radius:6px}.portrait-name em{font-style:normal;color:#a3edda}.project-emblem{position:relative;width:200px;height:180px;display:grid;place-items:center;isolation:isolate}.project-glyph{display:grid;place-items:center;width:125px;height:125px;border:1px solid color-mix(in srgb,var(--accent) 70%,transparent);border-radius:28px;background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);font-size:75px;font-weight:800;box-shadow:0 0 50px color-mix(in srgb,var(--accent) 22%,transparent);animation:emblem-build .22s cubic-bezier(.2,1.3,.4,1) both}.emblem-orbit{position:absolute;inset:0;border:1px solid #9dacc633;border-radius:50%;transform:rotate(-25deg) scaleY(.7);z-index:-1;animation:emblem-orbit .3s ease-out both}.emblem-orbit.second{transform:rotate(60deg) scaleY(.65);inset:-10px}.project-emblem i{position:absolute;top:0;left:50%;width:4px;height:4px;background:var(--accent);border-radius:50%;box-shadow:0 0 12px var(--accent);animation:orbit-spark .3s both}.project-emblem i:nth-of-type(2){left:12%;top:75%;animation-delay:.04s}.project-emblem i:nth-of-type(3){left:85%;top:60%;animation-delay:.08s}.end-monogram{font-size:clamp(100px,18vw,190px);font-weight:900;line-height:1;letter-spacing:-18px;animation:emblem-build .7s both}.end-monogram span{color:#9cebdc;font-size:.65em;letter-spacing:0}.reel-wipe{position:absolute;inset:0;z-index:5;pointer-events:none;background:currentColor;animation:reel-wipe .16s cubic-bezier(.6,0,.2,1) both}.reel-progress{display:flex;gap:5px}.reel-progress span{width:25px;height:2px;background:#9aa3b233}.reel-progress span.done{background:currentColor}.reel-grain{position:absolute;inset:0;background-image:radial-gradient(#a9b9cb22 .6px,transparent .6px);background-size:5px 5px;opacity:.16;pointer-events:none}@keyframes frame-enter{from{opacity:0;transform:translateY(20px) scale(.9);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}@keyframes portrait-focus{from{transform:scale(1.08)}to{transform:scale(1)}}@keyframes emblem-build{from{transform:rotate(-18deg) scale(.2);opacity:0;filter:blur(8px)}to{transform:rotate(0) scale(1);opacity:1;filter:none}}@keyframes emblem-orbit{from{opacity:0;scale:.2}to{opacity:1;scale:1}}@keyframes orbit-spark{from{transform:scale(0)}50%{transform:scale(2)}to{transform:scale(1)}}@keyframes reel-wipe{from{clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}to{clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%)}}@media(max-width:650px){.project-reel footer>span:first-child{display:none}.reel-frame h1{letter-spacing:-1px}.portrait-frame{width:280px;height:210px}.project-reel header{font-size:8px;letter-spacing:1px}.reel-progress span{width:17px}}@media(prefers-reduced-motion:reduce){.project-reel,.reel-frame,.portrait-frame img,.project-glyph,.emblem-orbit,.project-emblem i,.end-monogram{animation:none;transition:none;transform:none;filter:none}.reel-wipe{display:none}}
-
-/* Compact, rapid logo sequence inspired by the reference. */
-.project-reel{background:#0b0b0b;transition:background .1s,color .1s}.project-reel.light{background:#f5f5f2;color:#151515}.reel-frame{inset:0;animation:compact-enter .1s ease-out both}.portrait-frame{width:110px;height:110px;border-radius:50%;box-shadow:none;transform:none;border:1px solid #fff3}.portrait-frame img{object-position:50% 50%;animation:portrait-focus .38s both}.portrait-border{inset:4px;border-radius:50%;border-color:#ffffff30}.project-emblem{width:120px;height:100px}.project-glyph{width:84px;height:84px;font-size:53px;border:0;border-radius:16px;background:transparent;box-shadow:none;color:inherit;animation:compact-enter .1s both}.emblem-orbit,.project-emblem i{display:none}.end-monogram{font-size:91px;letter-spacing:-9px;animation:compact-enter .12s both}.end-monogram span{font-size:.5em;color:inherit}.reel-wipe{background:inherit;animation:compact-wipe .09s both}@keyframes compact-enter{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}@keyframes compact-wipe{from{opacity:1}to{opacity:0}}@media(max-width:650px){.portrait-frame{width:110px;height:110px}}@media(prefers-reduced-motion:reduce){.reel-frame,.project-glyph,.end-monogram,.portrait-frame img{animation:none}.reel-wipe{display:none}}
+.refined-reel{position:fixed;inset:0;background:#090b10;z-index:1100;overflow:hidden;color:#f4f4ee;pointer-events:none}.reel-center{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px}.face-logo{position:absolute;inset:7px;overflow:hidden;border-radius:50%;border:1px solid #d7dedb44;box-shadow:0 0 25px #b5c3d40a}.face-logo.hidden{visibility:hidden}.face-logo img{position:absolute;width:480%;height:360%;max-width:none;left:-173%;top:-103%;object-fit:fill}.morph-logo{position:absolute;inset:0;width:120px;height:120px;overflow:visible;color:#f4f4ee}.morph-shell{fill:#ffffff08;stroke:#f4f4ee;stroke-width:2.4;stroke-linejoin:round}.mark-core{transform-origin:center}.final-sj{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Lexend,Arial,sans-serif;font-size:83px;line-height:1;font-weight:900;letter-spacing:-8px;color:#f4f4ee;transform-origin:center;will-change:transform}.final-sj span{font-size:40px;letter-spacing:0;color:#9ee6d1}.accessible-project{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.landing .mark-core{opacity:0!important}@media(prefers-reduced-motion:reduce){.morph-logo,.final-sj{display:none}.face-logo{visibility:visible}}
 </style>
