@@ -2,7 +2,7 @@
 import {onMount} from 'svelte';
 import gsap from 'gsap';
 let {projects=[],tamil=false,onfinish=()=>{}}=$props();
-let stage=$state(-1),landing=$state(false),overlay,face,emblem,mark,finalLogo;
+let stage=$state(0),landing=$state(false),overlay,emblem,mark,finalLogo;
 const t=(en,ta)=>tamil?ta:en;
 const radial=(rx,ry,star=false)=>Array.from({length:16},(_,i)=>{const a=i*Math.PI/8-Math.PI/2,r=star&&i%2?.55:1;return (Math.cos(a)*rx*r).toFixed(2)+','+(Math.sin(a)*ry*r).toFixed(2)}).join(' ');
 const shapes=[
@@ -19,15 +19,13 @@ onMount(()=>{
  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){const id=setTimeout(complete,700);return()=>clearTimeout(id);}
  const tl=gsap.timeline({onComplete:complete});
  gsap.set(emblem,{opacity:0});gsap.set(finalLogo,{opacity:0});
- tl.fromTo(face,{scale:.84,opacity:0},{scale:1,opacity:1,duration:.18})
- .to(face,{opacity:0,scale:1.06,duration:.12},.35);
  for(let i=0;i<projects.length;i++){
-  const at=.44+i*.19;
+  const at=i*.19;
   tl.call(()=>stage=i,[],at)
    .to(emblem,{opacity:1,attr:{points:shapes[i%shapes.length]},duration:.15,ease:'power2.inOut'},at)
    .fromTo(mark,{scale:.82,opacity:.25},{scale:1,opacity:1,duration:.14,ease:'power2.out'},at);
  }
- const end=.44+projects.length*.19;
+ const end=projects.length*.19;
  tl.call(()=>stage=projects.length,[],end)
  .to(emblem,{opacity:0,scale:.6,duration:.14},end)
  .fromTo(finalLogo,{opacity:0,scale:.55},{opacity:1,scale:1,duration:.17,ease:'power2.out'},end)
@@ -44,7 +42,6 @@ onMount(()=>{
 </script>
 <div bind:this={overlay} class="refined-reel" class:landing role="status" aria-label={t('Shyam and his projects','ஷ்யாம் மற்றும் அவரது படைப்புகள்')}>
  <div class="reel-center">
-  <div bind:this={face} class="face-logo" class:hidden={stage>=0}><img src="/media/shyam-reel-photo.jpg" alt="Shyam J" width="1280" height="960"/></div>
   <svg class="morph-logo" viewBox="-70 -70 140 140" aria-hidden="true">
    <polygon bind:this={emblem} points={shapes[0]} class="morph-shell"/>
    <g bind:this={mark} class="mark-core" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none">
