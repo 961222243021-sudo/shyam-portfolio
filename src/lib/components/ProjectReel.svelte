@@ -34,13 +34,13 @@ onMount(()=>{
   const target=document.querySelector('.nav .logo')?.getBoundingClientRect();
   const x=target?target.left+target.width/2:50,y=target?target.top+target.height/2:50;
   gsap.to(finalLogo,{x:x-window.innerWidth/2,y:y-window.innerHeight/2,scale:.28,duration:.5,ease:'power3.inOut'});
- },[],end+.2)
- .to(overlay,{backgroundColor:'rgba(9,11,16,0)',duration:.48},end+.2)
+ },[],end+1.255)
+ .to(overlay,{backgroundColor:'rgba(9,11,16,0)',duration:.48},end+.75)
  .to(finalLogo,{opacity:0,duration:.08},end+.7);
  return()=>{tl.kill();gsap.killTweensOf(finalLogo);};
 });
 </script>
-<div bind:this={overlay} class="refined-reel" class:landing role="status" aria-label={t('Shyam and his projects','ஷ்யாம் மற்றும் அவரது படைப்புகள்')}>
+<div bind:this={overlay} class="refined-reel" class:landing role="status" aria-label={t('Welcome to Shyam’s world','ஷ்யாமின் உலகிற்கு வரவேற்கிறோம்')}>
  <div class="reel-center">
   <svg class="morph-logo" viewBox="-70 -70 140 140" aria-hidden="true">
    <polygon bind:this={emblem} points={shapes[0]} class="morph-shell"/>
@@ -56,8 +56,20 @@ onMount(()=>{
   </svg>
   <div bind:this={finalLogo} class="final-sj" aria-hidden="true">SJ<span>•</span></div>
  </div>
+ {#if stage===projects.length}
+ <div class="stone-welcome">
+  <div class="stone-orbit" aria-hidden="true">
+   {#each ['#75aaff','#f4de69','#ae83ed','#ed6964','#edae62','#79dfa8'] as color,i}
+   <span class="infinity-stone" style={'--stone:'+color+';--from-x:'+([-130,-85,-35,35,85,130][i])+'px;--from-y:'+([-80,55,-60,60,-60,45][i])+'px;--end-x:'+(i<3?-145:145)+'px;--end-y:'+(i%3-1)*19+'px;--stone-delay:'+(i*.025)+'s'}><i></i></span>
+   {/each}
+  </div>
+  <p class="welcome-word">{t('Welcome to','வரவேற்கிறோம்')} <strong>{t('Shyam’s world.','ஷ்யாமின் உலகம்.')}</strong></p>
+  <span class="stone-line" aria-hidden="true"></span>
+ </div>{/if}
  <span class="accessible-project">{stage>=0&&stage<projects.length?t(projects[stage].title,projects[stage].ta):'Shyam J'}</span>
 </div>
 <style>
 .refined-reel{position:fixed;inset:0;background:#090b10;z-index:1100;overflow:hidden;color:#f4f4ee;pointer-events:none}.reel-center{position:absolute;left:50%;top:50%;width:120px;height:120px;margin:-60px 0 0 -60px}.face-logo{position:absolute;inset:7px;overflow:hidden;border-radius:50%;border:1px solid #d7dedb44;box-shadow:0 0 25px #b5c3d40a}.face-logo.hidden{visibility:hidden}.face-logo img{position:absolute;width:480%;height:360%;max-width:none;left:-173%;top:-103%;object-fit:fill}.morph-logo{position:absolute;inset:0;width:120px;height:120px;overflow:visible;color:#f4f4ee}.morph-shell{fill:#ffffff08;stroke:#f4f4ee;stroke-width:2.4;stroke-linejoin:round}.mark-core{transform-origin:center}.final-sj{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Lexend,Arial,sans-serif;font-size:83px;line-height:1;font-weight:900;letter-spacing:-8px;color:#f4f4ee;transform-origin:center;will-change:transform}.final-sj span{font-size:40px;letter-spacing:0;color:#9ee6d1}.accessible-project{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.landing .mark-core{opacity:0!important}@media(prefers-reduced-motion:reduce){.final-sj{display:none}.face-logo{visibility:visible}}
+
+.stone-welcome{position:absolute;left:50%;top:calc(50% + 85px);width:min(360px,90vw);transform:translateX(-50%);text-align:center;transition:opacity .25s}.stone-orbit{position:absolute;left:50%;top:18px;width:1px;height:1px;pointer-events:none}.infinity-stone{position:absolute;left:-5px;top:-7px;width:10px;height:14px;background:var(--stone);border-radius:45% 35% 45% 35%;transform:rotate(35deg);box-shadow:0 0 8px var(--stone),0 0 22px color-mix(in srgb,var(--stone) 60%,transparent);animation:stones-conjure .85s var(--stone-delay) both}.infinity-stone i{position:absolute;left:2px;top:2px;width:4px;height:5px;border-radius:50%;background:#ffffffa6;filter:blur(.4px)}.welcome-word{position:relative;color:#e0e8f3;font:400 14px/1.7 Lexend,Arial,sans-serif;letter-spacing:.2px;margin:0;padding:5px 25px;animation:stone-words .55s .12s both}.welcome-word strong{display:inline;color:#e8dcfa;font-weight:600;text-shadow:0 0 15px #b69ee84a}.stone-line{display:block;width:160px;height:1px;margin:9px auto;background:linear-gradient(90deg,transparent,#79bff1,#b39beb,#edb678,#8ddaac,transparent);animation:stone-words .55s .2s both;box-shadow:0 0 10px #a5b2ed55}.landing .stone-welcome{opacity:0}@keyframes stones-conjure{0%{opacity:0;transform:translate(var(--from-x),var(--from-y)) rotate(-70deg) scale(.3)}22%{opacity:1}65%{opacity:1;transform:translate(var(--end-x),var(--end-y)) rotate(30deg) scale(1)}100%{opacity:.8;transform:translate(var(--end-x),var(--end-y)) rotate(35deg) scale(.8)}}@keyframes stone-words{from{opacity:0;filter:blur(5px);clip-path:inset(0 50%)}to{opacity:1;filter:blur(0);clip-path:inset(0 0)}}@media(prefers-reduced-motion:reduce){.infinity-stone,.welcome-word,.stone-line{animation:none}.infinity-stone{opacity:.8;transform:translate(var(--end-x),var(--end-y))}.stone-welcome{transition:none}}
 </style>
