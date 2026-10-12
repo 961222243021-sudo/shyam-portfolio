@@ -30,6 +30,9 @@ const certs=[['Ethical Hacking','Board Monk Cyber Security Services'],['Cyber Fo
 let shown=$derived(projects.filter(p=>filter==='all'||p.cat===filter));
 async function toggleLanguage(){tamil=!tamil;localStorage.setItem('shyam-language',tamil?'ta':'en');document.documentElement.lang=tamil?'ta':'en';await tick();ScrollTrigger.refresh();}
 
+let darkHint=$state(false);
+function dismissDarkHint(){darkHint=false;try{sessionStorage.setItem('shyam-dark-hint','seen');}catch{}}
+function tryDarkMode(){dismissDarkHint();if(!dark)switchTheme();}
 let birdFlight=$state(null),rocketFlight=$state(null),changingTheme=$state(false);
 const effectTimers=[];
 function laterEffect(fn,ms){effectTimers.push(setTimeout(fn,ms));}
@@ -45,7 +48,7 @@ function navigateBird(event,id){
  birdFlight={x:start.left+start.width/2,y:start.bottom+8,dx:window.innerWidth*.62-(start.left+start.width/2),dy:Math.max(150,Math.min(window.innerHeight*.7,target?.top||300))-(start.bottom+8)};
  laterEffect(()=>birdFlight=null,1150);
 }
-function switchTheme(){dark=!dark;changingTheme=motion;laterEffect(()=>changingTheme=false,1500);}
+function switchTheme(){dismissDarkHint();dark=!dark;changingTheme=motion;laterEffect(()=>changingTheme=false,1500);}
 function launchRocket(event){if(!motion)return;const box=event.currentTarget.getBoundingClientRect();rocketFlight={x:box.left+box.width/2,y:box.top};laterEffect(()=>rocketFlight=null,1700);}
 
 let clickAudio, hoverAudio;
@@ -67,6 +70,7 @@ onMount(()=>{
  tamil=localStorage.getItem('shyam-language')==='ta'; document.documentElement.lang=tamil?'ta':'en';
  dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
  motion=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ laterEffect(()=>{let seen=false;try{seen=sessionStorage.getItem('shyam-dark-hint')==='seen';}catch{}darkHint=!dark&&!seen;},1200);
  gsap.registerPlugin(ScrollTrigger);
  const lenis=new Lenis({duration:1,anchors:{offset:-100},autoRaf:true});
  lenis.on('scroll',ScrollTrigger.update);
@@ -86,7 +90,15 @@ onMount(()=>{
 <nav class:open={menu} aria-label="Main navigation">
 {#each [['home','home','முகப்பு'],['projects','portfolio','படைப்புகள்'],['research','research','ஆய்வு'],['about','about','என்னைப் பற்றி']] as item}<a href={'#'+item[0]} onclick={(event)=>navigateBird(event,item[0])}>{t(item[1],item[2])}</a>{/each}
 </nav>
-<div class="nav-actions"><a href="https://github.com/961222243021-sudo" target="_blank" rel="noreferrer" aria-label="GitHub">GH ↗</a><a href="https://www.linkedin.com/in/shyam-j-8708a6326" target="_blank" rel="noreferrer" aria-label="LinkedIn">in ↗</a><button class="language" onclick={toggleLanguage}>{t('தமிழ்','EN')}</button><button class="celestial-switch" class:night={dark} onclick={switchTheme} aria-label={t('Toggle light and dark theme','ஒளி மற்றும் இருள் தோற்றத்தை மாற்று')} aria-pressed={dark}><span class="switch-sun" aria-hidden="true">☀</span><span class="switch-moon" aria-hidden="true">☾</span></button></div>
+<div class="nav-actions"><a href="https://github.com/961222243021-sudo" target="_blank" rel="noreferrer" aria-label="GitHub">GH ↗</a><a href="https://www.linkedin.com/in/shyam-j-8708a6326" target="_blank" rel="noreferrer" aria-label="LinkedIn">in ↗</a><button class="language" onclick={toggleLanguage}>{t('தமிழ்','EN')}</button><span class="theme-guide-anchor"><button class="celestial-switch" class:night={dark} onclick={switchTheme} aria-label={t('Toggle light and dark theme','ஒளி மற்றும் இருள் தோற்றத்தை மாற்று')} aria-pressed={dark}><span class="switch-sun" aria-hidden="true">☀</span><span class="switch-moon" aria-hidden="true">☾</span></button>
+{#if darkHint}<aside class="dark-mode-guide" aria-label={t('Dark mode tip','இருள் தோற்ற உதவி')}>
+<svg class="guide-arrow" viewBox="0 0 80 70" aria-hidden="true"><path d="M9 61 Q66 65 64 10 M53 22 L64 8 L75 21"/></svg>
+<button class="guide-close" onclick={dismissDarkHint} aria-label={t('Dismiss dark mode tip','உதவியை மூடு')}>×</button>
+<p class="guide-eyebrow">☾ {t('A little tip','ஒரு சிறிய குறிப்பு')}</p>
+<h3>{t('Try dark mode ✦','இருள் தோற்றத்தை முயற்சியுங்கள் ✦')}</h3>
+<p>{t('The night scenery and glowing effects look even better. Tap the moon above!','இரவுக் காட்சியும் ஒளிரும் விளைவுகளும் இன்னும் அழகாக இருக்கும். மேலே உள்ள நிலாவைத் தட்டுங்கள்!')}</p>
+<button class="guide-try" onclick={tryDarkMode}>{t('Let’s go dark ↗','இருள் தோற்றத்திற்கு மாறலாம் ↗')}</button>
+</aside>{/if}</span></div>
 </header>
 <main>
 <section id="home" class="hero">
@@ -122,3 +134,7 @@ onMount(()=>{
 {#if birdFlight}<div class="navigation-bird" style={'left:'+birdFlight.x+'px;top:'+birdFlight.y+'px;--dx:'+birdFlight.dx+'px;--dy:'+birdFlight.dy+'px'} aria-hidden="true"><svg viewBox="0 0 70 45"><path class="wing" d="M35 25 Q13 0 3 16 Q17 15 35 28 Q54 5 67 17 Q52 17 35 25"/><path d="M24 27 Q37 10 51 27 L59 25 L52 30 Q38 40 24 27"/></svg><span>✦</span></div>{/if}
 {#if changingTheme}<div class="theme-passage" class:moonrise={dark} aria-hidden="true"><span>{dark?'☾':'☀'}</span><i></i></div>{/if}
 {#if rocketFlight}<div class="launch-rocket" style={'left:'+rocketFlight.x+'px;top:'+rocketFlight.y+'px'} aria-hidden="true"><svg viewBox="0 0 60 90"><path fill="#dbefff" stroke="#7396ce" stroke-width="2" d="M30 4 Q50 22 43 61 L17 61 Q10 22 30 4"/><path fill="#a293da" d="M17 41 L6 69 L18 61 M43 41 L54 69 L42 61"/><circle cx="30" cy="31" r="8" fill="#80bedc" stroke="#fff" stroke-width="3"/><path class="rocket-flame" fill="#f5b564" d="M21 63 Q18 79 30 88 Q42 79 39 63Z"/></svg><div class="rocket-smoke">{#each Array.from({length:8},(_,i)=>i) as i}<i style={'--i:'+i}></i>{/each}</div></div>{/if}
+
+<style>
+.theme-guide-anchor{position:relative;display:inline-flex;align-items:center}.dark-mode-guide{position:absolute;right:-8px;top:calc(100% + 38px);width:min(310px,calc(100vw - 32px));padding:23px;text-align:left;white-space:normal;border:1px solid #bda4f080;border-radius:20px;background:linear-gradient(135deg,#17253af5,#2a1e40fa);color:#eef3ff;box-shadow:0 16px 45px #131c4666,0 0 25px #af94f126;z-index:55;animation:guide-appear .6s cubic-bezier(.2,1.25,.4,1) both;backdrop-filter:blur(18px)}.guide-arrow{position:absolute;right:1px;top:-58px;width:66px;height:58px;overflow:visible;pointer-events:none;animation:guide-point 1.5s ease-in-out infinite}.guide-arrow path{fill:none;stroke:#d9bafa;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px #b890f7)}.dark-mode-guide h3{font-size:18px;line-height:1.5;margin:0 0 8px;color:#fff;letter-spacing:0}.dark-mode-guide p{font-size:12px;line-height:1.7;font-weight:400;margin:0 0 15px;color:#cbd6ee;letter-spacing:0}.dark-mode-guide .guide-eyebrow{font-size:10px;color:#c6a8ef;font-weight:700;letter-spacing:.7px;margin-bottom:8px}.dark-mode-guide .guide-close{position:absolute;right:9px;top:8px;display:grid;place-items:center;width:28px;height:28px;padding:0;color:#b9c6e3;font-size:21px;line-height:1;border:0;background:transparent}.dark-mode-guide .guide-try{background:#c4b2ef;color:#241c37;border:1px solid #dac9ff;border-radius:11px;padding:11px 15px;font-size:12px;font-weight:700;width:100%}.guide-try:hover{background:#dacaff}.dark-mode-guide button:focus-visible{outline:2px solid #f4e7ff;outline-offset:3px}@keyframes guide-appear{from{opacity:0;transform:translateY(-12px) scale(.92)}to{opacity:1;transform:none}}@keyframes guide-point{50%{transform:translateY(-6px)}}@media(prefers-reduced-motion:reduce){.dark-mode-guide,.guide-arrow{animation:none}}
+</style>
