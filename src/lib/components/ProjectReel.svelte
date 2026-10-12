@@ -34,9 +34,9 @@ onMount(()=>{
   const target=document.querySelector('.nav .logo')?.getBoundingClientRect();
   const x=target?target.left+target.width/2:50,y=target?target.top+target.height/2:50;
   gsap.to(finalLogo,{x:x-window.innerWidth/2,y:y-window.innerHeight/2,scale:.28,duration:.5,ease:'power3.inOut'});
- },[],end+1.255)
+ },[],end+.75)
  .to(overlay,{backgroundColor:'rgba(9,11,16,0)',duration:.48},end+.75)
- .to(finalLogo,{opacity:0,duration:.08},end+.7);
+ .to(finalLogo,{opacity:0,duration:.08},end+1.25);
  return()=>{tl.kill();gsap.killTweensOf(finalLogo);};
 });
 </script>
