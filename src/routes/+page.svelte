@@ -34,7 +34,7 @@ async function toggleLanguage(){tamil=!tamil;localStorage.setItem('shyam-languag
 let waterLoading=$state(false),waterReveal=$state(false);
 let previousOverflow='';
 function finishWaterWelcome(){waterLoading=false;waterReveal=true;laterEffect(()=>waterReveal=false,900);document.body.style.overflow=previousOverflow;try{localStorage.setItem('shyam-project-reel-v1','seen');}catch{}}
-function replayProjectIntro(){if(waterLoading)return;darkHint=false;waterLoading=true;previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';}
+
 let darkHint=$state(false);
 function dismissDarkHint(){darkHint=false;try{sessionStorage.setItem('shyam-dark-hint','seen');}catch{}}
 function tryDarkMode(){dismissDarkHint();if(!dark)switchTheme();}
@@ -116,7 +116,7 @@ onMount(()=>{
 <div class="tamil-world" aria-hidden="true"><div class="temple"><div class="tier t1"></div><div class="tier t2"></div><div class="tier t3"></div><div class="tier t4"></div><div class="arch">அ</div></div><span>தமிழ்நாடு · நெல்லை</span></div>
 <p class="scroll-note">{t('take a little look around my world','என் உலகைச் சுற்றிப் பாருங்கள்')} ↓</p>
 </section>
-<section id="projects" class="section"><ThunderProjects {tamil}/><button class="project-reel-replay" onclick={replayProjectIntro}>{t("watch my project reel ▶","என் படைப்புகளின் அறிமுகம் ▶")}</button>
+<section id="projects" class="section"><ThunderProjects {tamil}/>
 <div class="filters" aria-label="Project categories">{#each [['all','everything','அனைத்தும்'],['security','security','பாதுகாப்பு'],['tamil','Tamil & APIs','தமிழ் & API'],['tools','useful tools','பயனுள்ள கருவிகள்']] as f}<button class:active={filter===f[0]} onclick={()=>{filter=f[0];}} aria-pressed={filter===f[0]}>{t(f[1],f[2])}</button>{/each}</div>
 <div class="projects-grid">{#each shown as p}<article class="project glass tilt-project" onpointermove={tiltProject} onpointerleave={resetProject} style={'--accent:'+p.color}>
 <div class="project-art" aria-hidden="true"><span class="project-no">{p.n} / SHYAM'S LAB</span><div class="orbit o1"></div><div class="orbit o2"></div><div class="art-block"><span>{p.glyph}</span></div><span class="art-word">{p.title}</span><div class="art-dots">• • •</div></div>
