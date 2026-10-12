@@ -73,11 +73,11 @@ $effect(()=>{
 });
 onMount(()=>{
  let welcomed=false;try{welcomed=localStorage.getItem('shyam-project-reel-v1')==='seen';}catch{}
- if(!welcomed){waterLoading=true;previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';laterEffect(finishWaterWelcome,window.matchMedia('(prefers-reduced-motion: reduce)').matches?1200:11500);}
+ if(!welcomed){waterLoading=true;previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';}
  tamil=localStorage.getItem('shyam-language')==='ta'; document.documentElement.lang=tamil?'ta':'en';
  dark=window.matchMedia('(prefers-color-scheme: dark)').matches;
  motion=!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
- laterEffect(()=>{let seen=false;try{seen=sessionStorage.getItem('shyam-dark-hint')==='seen';}catch{}darkHint=!dark&&!seen;},waterLoading?11600:1200);
+ laterEffect(()=>{let seen=false;try{seen=sessionStorage.getItem('shyam-dark-hint')==='seen';}catch{}darkHint=!dark&&!seen;},waterLoading?4200:1200);
  gsap.registerPlugin(ScrollTrigger);
  const lenis=new Lenis({duration:1,anchors:{offset:-100},autoRaf:true});
  lenis.on('scroll',ScrollTrigger.update);
